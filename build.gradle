@@ -1,0 +1,24 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath "io.ratpack:ratpack-gradle:1.1.1"
+  }
+}
+
+apply plugin: "io.ratpack.ratpack-groovy"
+apply plugin: "idea"
+
+repositories {
+  jcenter()
+}
+
+dependencies {
+  compile "io.ratpack:ratpack-pac4j:1.1.1"
+  compile "org.pac4j:pac4j-oauth:1.7.0"
+
+  testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
+
+  runtime "org.slf4j:slf4j-simple:1.7.12"
+}
