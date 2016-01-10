@@ -24,10 +24,10 @@ class PingModuleSpec extends Specification {
     CloseableApplicationUnderTest aut
     @Delegate TestHttpClient client
 
-    def setup() {
+    void app(String path) {
         aut = GroovyEmbeddedApp.of { GroovyRatpackServerSpec server ->
             server.registry(Guice.registry { BindingsSpec bindings ->
-                bindings.module PingModule2
+                bindings.moduleConfig PingModule2, new PingModuleConfig(path: path)
             })
             server.handlers {
                 get { render 'OK' }
@@ -35,18 +35,23 @@ class PingModuleSpec extends Specification {
         }
         client = TestHttpClient.testHttpClient(aut)
     }
+
     def cleanup() { aut.close() }
 
     @Unroll("can use ping module on path [#path]")
     def "can use ping module on path"() {
+        given:
+            app path
+
         when:
-            ReceivedResponse response = get ''
+            ReceivedResponse response = get path
 
         then:
-            200 == response.statusCode
+            200          == response.statusCode
+            Ping.MESSAGE == response.body.text
 
         where:
-            path = PingModuleConfig.DEFAULT_PATH
+            path << [PingModuleConfig.DEFAULT_PATH, 'other-path']
     }
 
 }
@@ -76,6 +81,11 @@ final class PingModuleConfig {
     String path = DEFAULT_PATH
 }
 
+/**
+ * Original implementation using Guice set binder
+ * See @mrhaki's Ratpacked: Add Chains Via Registry
+ * http://mrhaki.blogspot.co.uk/2016/01/ratpacked-add-chains-via-registry.html
+ */
 final class PingModule extends ConfigurableModule<PingModuleConfig> {
 
     @Override
