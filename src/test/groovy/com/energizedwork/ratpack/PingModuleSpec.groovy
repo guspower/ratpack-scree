@@ -122,6 +122,9 @@ final class PingHandlerDecorator implements HandlerDecorator {
 
 }
 
+/**
+ * Reimplementation using instance of {@link ratpack.handling.HandlerDecorator}
+ */
 final class PingModule2 extends ConfigurableModule<PingModuleConfig> {
 
     @Override
